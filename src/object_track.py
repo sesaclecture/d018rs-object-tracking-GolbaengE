@@ -48,31 +48,23 @@ def update_color_value(x, color, is_min):
 def load_config(config_path):
     # TODO: LAB-cal.json 파일을 읽어와서 전역 변수에 설정하기
     global l_min, l_max, a_min, a_max, b_min, b_max  # 전역 변수 사용 선언
-
-    if len(sys.argv) < 2:
-        print(f"USAGE:{sys.argv[0]} <if you have JSON files, input_JSON>")
-        config = {
-            "l_min" : 0,
-            "a_min" : 0,
-            "b_min" : 0,
-            "l_max" : 255,
-            "a_max" : 255,
-            "b_max" : 255
-        }
-    else:
-        json_path = sys.argv[1]
-        with open(json_path, "r") as f:
-            config = json.load(f)
-
+    with open(config_path, "r") as f:
+        config = json.load(f)
     l_max = config["l_max"]
+    l_min = config["l_min"]
     a_min = config["a_min"]
     a_max = config["a_max"]
     b_min = config["b_min"]
     b_max = config["b_max"]
 
 def save_config(config_path):
-    # TODO: 현재 설정된 전역 변수를 LAB-cal.json 파일로 저장하기        
-    with open("LAB-cal.json", "w") as f: # r : 읽기  / w : 쓰기
+    # TODO: 현재 설정된 전역 변수를 LAB-cal.json 파일로 저장하기
+    save_data = {
+        "l_min": l_min, "l_max": l_max,
+        "a_min": a_min, "a_max": a_max,
+        "b_min": b_min, "b_max": b_max
+                }        
+    with open(config_path, "w") as f: # r : 읽기  / w : 쓰기
         json.dump(save_data, f, indent=4)
         print("LAB cal data was saved.")
 
