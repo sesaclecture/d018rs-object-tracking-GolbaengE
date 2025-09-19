@@ -47,12 +47,35 @@ def update_color_value(x, color, is_min):
 
 def load_config(config_path):
     # TODO: LAB-cal.json 파일을 읽어와서 전역 변수에 설정하기
-    pass
+    global l_min, l_max, a_min, a_max, b_min, b_max  # 전역 변수 사용 선언
 
+    if len(sys.argv) < 2:
+        print(f"USAGE:{sys.argv[0]} <if you have JSON files, input_JSON>")
+        config = {
+            "l_min" : 0,
+            "a_min" : 0,
+            "b_min" : 0,
+            "l_max" : 255,
+            "a_max" : 255,
+            "b_max" : 255
+        }
+    else:
+        json_path = sys.argv[1]
+        with open(json_path, "r") as f:
+            config = json.load(f)
+
+    l_max = config["l_max"]
+    a_min = config["a_min"]
+    a_max = config["a_max"]
+    b_min = config["b_min"]
+    b_max = config["b_max"]
 
 def save_config(config_path):
-    # TODO: 현재 설정된 전역 변수를 LAB-cal.json 파일로 저장하기
-    pass
+    # TODO: 현재 설정된 전역 변수를 LAB-cal.json 파일로 저장하기        
+    with open("LAB-cal.json", "w") as f: # r : 읽기  / w : 쓰기
+        json.dump(save_data, f, indent=4)
+        print("LAB cal data was saved.")
+
 
 
 def update_trackbar_positions():
@@ -66,12 +89,24 @@ def update_trackbar_positions():
 
 def find_biggest_contour(mask):
     # TODO: mask 변수 값으로 부터 연결된 객체 중 가장 큰 객체 찾기
-    pass
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) # RETR_EXTERNAL : 외부 윤곽선, CHAIN_APPROX_SIMPLE : 점들을 단순화
+    if not contours:
+        return None
+    
+    biggest_contour = max(contours, key=cv2.contourArea)
+    return biggest_contour
 
 
 def draw_boundingbox(image, contour):
     # TODO: 가장 큰 객체에 대해 외접하는 바운딩 박스 그리기, cv2.boundingRect() 사용
     # TODO: Rect: (x y w h) 형태로 좌표 출력, cv2.putText() 사용
+    x, y, w, h = cv2.boundingRect(contour) # x, y, w, h = cv2.boundingRect(contour)
+    cv2.rectangle(image, (x,y), (x+w, y+h), (0,255,0),2)
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    text_pos = (x, y - 10)  # 박스 위쪽에 띄우기
+    cv2.putText(image, f"Rect: ({x}, {y}, {w}, {h})",
+                text_pos, font, 1, (0, 255, 0), 2)
+
     pass
 
 
